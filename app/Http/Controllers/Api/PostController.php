@@ -10,6 +10,22 @@ use App\Http\Resources\PostResource;
 class PostController extends Controller
 {
     public function index(){
-        return PostResource::collection(Post::paginate(3)); 
+        $orderColumn = request('order_column', 'created_at'); 
+        if (! in_array($orderColumn, ['id', 'title', 'created_at'])) { 
+            $orderColumn = 'created_at';
+        } 
+        $orderDirection = request('order_direction', 'desc');
+        if (! in_array($orderDirection, ['asc', 'desc'])) { 
+            $orderDirection = 'desc';
+        } 
+
+        $posts = Post::with('category')
+                ->when(request('category'), function ($query) { 
+                    $query->where('category_id', request('category'));
+                })
+                ->orderBy($orderColumn, $orderDirection)
+                ->paginate(10);
+
+        return PostResource::collection($posts); 
     }
 }
