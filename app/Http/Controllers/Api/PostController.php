@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Http\Resources\PostResource;
+use App\Http\Requests\StorePostRequest;
 
 class PostController extends Controller
 {
@@ -27,5 +28,10 @@ class PostController extends Controller
                 ->paginate(10);
 
         return PostResource::collection($posts); 
+    }
+
+    public function store(StorePostRequest $request){
+        $post = Post::create($request->validated());
+        return new PostResource($post);
     }
 }
