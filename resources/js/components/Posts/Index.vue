@@ -91,13 +91,10 @@
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
                             {{ post.created_at }}
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900"> 
-                            <router-link :to="{ name: 'posts.edit', params: { id: post.id } }">Edit</router-link>
-                        </td>
+                        
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
-                            <router-link :to="{ name: 'posts.edit', params: { id: post.id } }">Edit</router-link>
-                            <a href="#" @click.prevent="deletePost(post.id)" class="ml-2">Delete</a> 
-                        </td>
+                            <router-link v-if="can('posts.update')" :to="{ name: 'posts.edit', params: { id: post.id } }">Edit</router-link> 
+                            <a href="#" v-if="can('posts.delete')" @click.prevent="deletePost(post.id)" class="ml-2">Delete</a>                         </td>
                     </tr>
                 </tbody>
             </table>
@@ -138,12 +135,16 @@ import { onMounted, ref, watch } from "vue";
 import { TailwindPagination } from 'laravel-vue-pagination';
 import usePosts from "@/composables/posts";
 import useCategories from "@/composables/categories"; 
+import { useAbility } from '@casl/vue' 
+
 
 const selectedCategory = ref('')
 const orderColumn = ref('created_at') 
 const orderDirection = ref('desc') 
 const { posts, getPosts, deletePost } = usePosts()
 const { categories, getCategories } = useCategories() 
+const { can } = useAbility() 
+
 
 
 onMounted(() => {
